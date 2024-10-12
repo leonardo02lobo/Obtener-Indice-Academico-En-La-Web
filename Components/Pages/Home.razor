@@ -58,7 +58,7 @@
 		materias.Clear();
 		try
 		{
-			string consulta = $"SELECT * FROM obtener_indice_academico.materias_{materia};";
+			string consulta = $"SELECT * FROM {Conexion.nombreBD}.materias_{materia};";
 			MySqlCommand comando = new MySqlCommand(consulta, connection.miConexion);
 			connection.miConexion.Open();
 			MySqlDataReader reader = comando.ExecuteReader();
@@ -67,6 +67,7 @@
 			{
 				materias.Add(new Materias(reader.GetString(0), reader.GetString(2), reader.GetInt32(1), reader.GetInt32(3)));
 			}
+			reader.Close();
 		}
 		catch (MySqlException e)
 		{

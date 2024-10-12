@@ -9,19 +9,19 @@
 <p>@mensaje</p>
     <div class="mb-3">
         <label for="exampleInputEmail1" class="form-label">Nombre</label>
-        <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" @bind="nombre" required>
+        <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" @bind="persona.nombre" required>
     </div>
     <div class="mb-3">
         <label for="exampleInputEmail1" class="form-label">Apellido</label>
-    <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" @bind="apellido" required>
+        <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" @bind="persona.apellido" required>
     </div>
     <div class="mb-3">
         <label for="exampleInputEmail1" class="form-label">Cedula</label>
-    <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" @bind="cedula" required>
+        <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" @bind="persona.cedula" required>
     </div>
     <div class="mb-3">
         <label for="exampleInputEmail1" class="form-label">Carrera</label>
-    <InputSelect @bind-Value="carrera" required>
+        <InputSelect @bind-Value="persona.carrera" required>
             <option value="">
                 Selection
             </option>
@@ -35,34 +35,27 @@
     </div>
     <div class="mb-3">
         <label for="exampleInputEmail1" class="form-label">Usuario</label>
-    <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" @bind="usuario" required>
+        <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" @bind="persona.usuario" required>
     </div>
     <div class="mb-3">
         <label for="exampleInputEmail1" class="form-label">Contraseña</label>
-    <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" @bind="contrasenia" required>
+        <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" @bind="persona.contrasenia" required>
     </div>
-<div class="col">
-    <button type="submit" class="btn btn-primary" @onclick="EnviarDatos">Enviar</button>
-</div>
+    <div class="col">
+        <button type="submit" class="btn btn-primary" @onclick="EnviarDatos">Enviar</button>
+    </div>
 
 @code{
-    private string? carrera;
-    private string? nombre;
-    private string? apellido;
-    private string? cedula;
-    private string? usuario;
-    private string? contrasenia;
+    private Persona persona = new();
     private Conexion connection = new Conexion();
     private string? mensaje = "";
 
-    private async Task EnviarDatos()
+    private void EnviarDatos()
     {
         try
         {
-            connection.miConexion.Open();
-            string consulta = $"insert into obtener_indice_academico.user(nombre,apellido,cedula,carrera,contrasenia,usuario) value ('{nombre}','{apellido}','{cedula}','{carrera}','{contrasenia}','{usuario}');";
-            MySqlCommand comando = new MySqlCommand(consulta, connection.miConexion);
-            await comando.ExecuteNonQueryAsync();
+            connection.InsertarDatos(persona); 
+            connection.CrearTabla(persona);
             navigation.NavigateTo("/calcular");
         }
         catch (MySqlException e)
@@ -71,7 +64,7 @@
         }
         finally
         {
-            connection.miConexion.Close();
+            connection.CerrarConexion();
         }
     }
 }

@@ -64,7 +64,7 @@
 
 
 			connection.miConexion.Open();
-			string consulta = $"select cedula,carrera FROM obtener_indice_academico.user where usuario = '{usuario}' and contrasenia = '{contrasenia}'";
+			string consulta = $"select cedula,carrera FROM {Conexion.nombreBD}.user where usuario = '{usuario}' and contrasenia = '{contrasenia}'";
 			MySqlCommand command = new MySqlCommand(consulta, connection.miConexion);
 			MySqlDataReader reader = command.ExecuteReader();
 
@@ -75,7 +75,7 @@
 			}
 			reader.Close();
 
-			consulta = $"SELECT distinct obtener_indice_academico.materias_{carrera[1]}.codigo,obtener_indice_academico.materias_{carrera[1]}.materia,obtener_indice_academico.materias_{carrera[1]}.UC,obtener_indice_academico.notas_{usuario}_{cedula}.notas,obtener_indice_academico.materias_{carrera[1]}.semestre FROM obtener_indice_academico.materias_{carrera[1]} INNER JOIN obtener_indice_academico.notas_{usuario}_{cedula} USING(codigo);";
+			consulta = $"SELECT distinct {Conexion.nombreBD}.materias_{carrera[1]}.codigo,{Conexion.nombreBD}.materias_{carrera[1]}.materia,{Conexion.nombreBD}.materias_{carrera[1]}.UC,{Conexion.nombreBD}.notas_{usuario}_{cedula}.notas,{Conexion.nombreBD}.materias_{carrera[1]}.semestre FROM {Conexion.nombreBD}.materias_{carrera[1]} INNER JOIN {Conexion.nombreBD}.notas_{usuario}_{cedula} USING(codigo);";
 			command = new MySqlCommand(consulta, connection.miConexion);
 			MySqlDataReader reader2 = command.ExecuteReader();
 
@@ -83,6 +83,7 @@
 			{
 				notas.Add(new Notas(reader2.GetString(0), reader2.GetString(1), reader2.GetInt32(2), reader2.GetInt32(3), reader2.GetInt32(4)));
 			}
+			reader2.Close();
 		}catch(MySqlException e )
 		{
 			mensaje = e.Message;
@@ -106,7 +107,7 @@
 		try
 		{
 			connection.miConexion.Open();
-			string consulta = $"select sum(notas * UC),sum(UC) FROM obtener_indice_academico.notas_{usuario}_{cedula} where notas != 0;";
+			string consulta = $"select sum(notas * UC),sum(UC) FROM {Conexion.nombreBD}.notas_{usuario}_{cedula} where notas != 0;";
 			MySqlCommand command = new MySqlCommand(consulta, connection.miConexion);
 			MySqlDataReader reader = command.ExecuteReader();
 
@@ -116,6 +117,7 @@
 			}
 
 			mensaje = $"Su indice academico quedo en: {(double)Math.Round(indice,2)}";
+			reader.Close();
 		}catch(MySqlException e)
 		{
 			mensaje = e.Message;

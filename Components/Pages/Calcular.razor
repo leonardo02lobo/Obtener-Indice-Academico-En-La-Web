@@ -39,7 +39,7 @@
 	{
 		try
 		{
-			string consulta = $"SELECT exists ( select 1 FROM obtener_indice_academico.user where usuario = '{usuario}' and contrasenia = '{contrasenia}') as existe; ";
+			string consulta = $"SELECT exists ( select 1 FROM {Conexion.nombreBD}.user where usuario = '{usuario}' and contrasenia = '{contrasenia}') as existe; ";
 			MySqlCommand comando = new MySqlCommand(consulta, connection.miConexion);
 			connection.miConexion.Open();
 			MySqlDataReader reader = comando.ExecuteReader();
@@ -51,6 +51,7 @@
 					navigation.NavigateTo($"/calcular/indice?usuario={usuario}&contrasenia={contrasenia}");
 				}
 			}
+			reader.Close();
 		}
 		catch (MySqlException e)
 		{

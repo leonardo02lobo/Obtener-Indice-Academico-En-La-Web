@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SistemaDeListadoMateriasBD")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4492433f2af2fecb069bf8a3bd04f1b83f542c20")]
 [assembly: System.Reflection.AssemblyProductAttribute("SistemaDeListadoMateriasBD")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SistemaDeListadoMateriasBD")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
