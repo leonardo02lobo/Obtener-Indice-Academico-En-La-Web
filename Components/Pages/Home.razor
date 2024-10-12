@@ -1,0 +1,80 @@
+﻿@page "/"
+@using MySql.Data.MySqlClient
+@using SistemaDeListadoMateriasBD.Models
+@using SistemaDeListadoMateriasBD.Controller
+@rendermode InteractiveServer
+
+<PageTitle>Listado</PageTitle>
+
+<p>@mensaje</p>
+<h1>Listado de las materias de: @materia</h1>
+<div>
+	<label>seleccione la carrera</label>
+	<InputSelect @bind-Value="materia">
+		<option value="">
+			Selection
+		</option>
+		<option value="Informatica">
+			Informatica
+		</option>
+		<option value="Electronica">
+			Electronica
+		</option>
+	</InputSelect>
+</div>
+
+<button data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block mb-4" @onclick="MostrarMateria">Consultar</button>
+
+<table class="table">
+	<thead>
+		<tr>
+			<th>Codigo</th>
+			<th>Materias</th>
+			<th>Semestre</th>
+			<th>UC</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach(var materia in materias)
+		{
+			<tr>
+				<td>@materia._codigo</td>
+				<td>@materia._materia</td>
+				<td>@materia._semestre</td>
+				<td>@materia._UC</td>
+			</tr>
+		}
+	</tbody>
+</table>
+
+@code{
+	private string? materia = "";
+	private List<Materias> materias = new();
+	private Conexion connection = new Conexion();
+	private string mensaje = "";
+
+	private void MostrarMateria()
+	{
+		materias.Clear();
+		try
+		{
+			string consulta = $"SELECT * FROM obtener_indice_academico.materias_{materia};";
+			MySqlCommand comando = new MySqlCommand(consulta, connection.miConexion);
+			connection.miConexion.Open();
+			MySqlDataReader reader = comando.ExecuteReader();
+
+			while (reader.Read())
+			{
+				materias.Add(new Materias(reader.GetString(0), reader.GetString(2), reader.GetInt32(1), reader.GetInt32(3)));
+			}
+		}
+		catch (MySqlException e)
+		{
+			mensaje = e.Message;
+		}
+		finally
+		{
+			connection.miConexion.Close();
+		}
+	}
+}

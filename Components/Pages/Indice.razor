@@ -1,0 +1,133 @@
+﻿@page "/calcular/indice"
+@using MySql.Data.MySqlClient
+@using SistemaDeListadoMateriasBD.Controller
+@using SistemaDeListadoMateriasBD.Models
+@using Microsoft.AspNetCore.WebUtilities
+@inject NavigationManager navigation
+@rendermode InteractiveServer
+
+<h3>Bienvenido @usuario!</h3>
+<p>@mensaje</p>
+
+<div class="col">
+	<button class="btn btn-primary" @onclick="mostrarIndice">Calcular Indice</button>
+	<button class="btn btn-primary" @onclick="ActualizarDatos">Actualizar Datos</button>
+</div>
+
+<table class="table">
+	<thead>
+		<tr>
+			<th>Codigo</th>
+			<th>Materias</th>
+			<th>Semestre</th>
+			<th>Nota</th>
+			<th>UC</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach(var nota in notas)
+		{
+
+			<tr>
+				<td>@nota._codigo</td>
+				<td>@nota._materia</td>
+				<td>@nota._semestre</td>
+				<td>@nota._notas</td>
+				<td>@nota._UC</td>
+			</tr>
+		}
+	</tbody>
+</table>
+
+@code {
+	[Parameter]
+	public string? usuario { get; set; }
+	[Parameter]
+	public string? contrasenia { get; set; }
+
+	private int cedula { get; set; }
+	private string[]? carrera { get; set; }
+
+	private List<Notas> notas  = new List<Notas>();
+	private Conexion connection = new();
+	private string mensaje = "";
+
+
+	protected override void OnInitialized()
+	{
+		try
+		{
+			var uri = navigation.ToAbsoluteUri(navigation.Uri);
+			var query = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
+			usuario = query["usuario"];
+			contrasenia = query["contrasenia"];
+
+
+			connection.miConexion.Open();
+			string consulta = $"select cedula,carrera FROM obtener_indice_academico.user where usuario = '{usuario}' and contrasenia = '{contrasenia}'";
+			MySqlCommand command = new MySqlCommand(consulta, connection.miConexion);
+			MySqlDataReader reader = command.ExecuteReader();
+
+			while (reader.Read())
+			{
+				cedula = reader.GetInt32(0);
+				carrera = reader.GetString(1).ToLower().Split(" ");
+			}
+			reader.Close();
+
+			consulta = $"SELECT distinct obtener_indice_academico.materias_{carrera[1]}.codigo,obtener_indice_academico.materias_{carrera[1]}.materia,obtener_indice_academico.materias_{carrera[1]}.UC,obtener_indice_academico.notas_{usuario}_{cedula}.notas,obtener_indice_academico.materias_{carrera[1]}.semestre FROM obtener_indice_academico.materias_{carrera[1]} INNER JOIN obtener_indice_academico.notas_{usuario}_{cedula} USING(codigo);";
+			command = new MySqlCommand(consulta, connection.miConexion);
+			MySqlDataReader reader2 = command.ExecuteReader();
+
+			while (reader2.Read())
+			{
+				notas.Add(new Notas(reader2.GetString(0), reader2.GetString(1), reader2.GetInt32(2), reader2.GetInt32(3), reader2.GetInt32(4)));
+			}
+		}catch(MySqlException e )
+		{
+			mensaje = e.Message;
+		}
+		catch (ArgumentException e)
+		{
+			mensaje = e.Message;
+		}catch(KeyNotFoundException e)
+		{
+			mensaje = e.Message;
+		}
+		finally
+		{
+			connection.miConexion.Close();
+		}
+	}
+
+	private void mostrarIndice()
+	{
+		double indice = 0;
+		try
+		{
+			connection.miConexion.Open();
+			string consulta = $"select sum(notas * UC),sum(UC) FROM obtener_indice_academico.notas_{usuario}_{cedula} where notas != 0;";
+			MySqlCommand command = new MySqlCommand(consulta, connection.miConexion);
+			MySqlDataReader reader = command.ExecuteReader();
+
+			while (reader.Read())
+			{
+				indice = (double)reader.GetInt32(0) / reader.GetInt32(1);
+			}
+
+			mensaje = $"Su indice academico quedo en: {(double)Math.Round(indice,2)}";
+		}catch(MySqlException e)
+		{
+			mensaje = e.Message;
+		}
+		finally
+		{
+			connection.miConexion.Close();
+		}
+
+	}
+	private void ActualizarDatos()
+	{
+		navigation.NavigateTo($"/calcular/indice/actualizar?carrera={carrera[1]}&nombre={usuario}&cedula={cedula}");
+	}
+}

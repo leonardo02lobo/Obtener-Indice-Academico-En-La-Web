@@ -1,0 +1,121 @@
+﻿@page "/calcular/indice/actualizar"
+@using MySql.Data.MySqlClient
+@using SistemaDeListadoMateriasBD.Controller
+@inject NavigationManager navigation
+@rendermode InteractiveServer
+
+<h3>Actualizar La Nota de Una Materia</h3>
+
+<p>@mensaje</p>
+<p>Seleccione la Materia a Modificar su nota: @materia</p>
+<div>
+	<label>seleccione la carrera</label>
+	<InputSelect @bind-Value="materia">
+		<option value="">
+			Selection
+		</option>
+		@foreach(var materia in materias)
+		{
+			<option value="@materia">
+				@materia
+			</option>
+		}
+	</InputSelect>
+</div>
+
+<br />
+<div class="col">
+	<label>Ingrese su nota para modificar en un rango de 0 al 9</label>
+	<input type="number" min="0" max="9" @bind="nota"/>
+</div>
+<br />
+<div class="col">
+	<button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block mb-4" @onclick="GuardarCambios">Guardar Cambios</button>
+</div>
+
+@code {
+	[Parameter]
+	public string? carrera { get; set; }
+	[Parameter]
+	public string? nombre { get; set; }
+	[Parameter]
+	public string? cedula { get; set; }
+
+	private string? materia { get; set; }
+	private Conexion connection = new();
+	private List<string> materias = new List<string>();
+	private string? mensaje = "";
+	private int? nota;
+
+	protected override void OnInitialized()
+	{
+
+		var uri = navigation.ToAbsoluteUri(navigation.Uri);
+		var query = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
+		carrera = query["carrera"];
+		nombre = query["nombre"];
+		cedula = query["cedula"];
+		try
+		{
+			connection.miConexion.Open();
+			string consulta = $"select materia from obtener_indice_academico.materias_{carrera};";
+			MySqlCommand command = new MySqlCommand(consulta, connection.miConexion);
+			MySqlDataReader reader = command.ExecuteReader();
+
+			while (reader.Read())
+			{
+				materias.Add(reader.GetString(0));
+			}
+		}catch(MySqlException e)
+		{
+			mensaje = e.Message;
+		}
+		finally
+		{
+			connection.miConexion.Close();
+		}
+	}
+
+	public async Task GuardarCambios()
+	{
+		string codigo = "";
+		try
+		{
+			connection.miConexion.Open();
+			MySqlCommand command2 = new MySqlCommand($"select codigo from obtener_indice_academico.materias_{carrera} where materia = '{materia}';", connection.miConexion);
+			MySqlDataReader reader = command2.ExecuteReader();
+
+			while (await reader.ReadAsync())
+			{
+				codigo = reader.GetString(0);
+			}
+			reader.Close();
+			string guardar = $"UPDATE obtener_indice_academico.notas_{nombre}_{cedula} SET obtener_indice_academico.notas_{nombre}_{cedula}.notas = {nota} WHERE codigo = '{codigo}' limit 1;";
+			MySqlCommand command = new MySqlCommand(guardar, connection.miConexion);
+			await command.ExecuteNonQueryAsync();
+
+		}catch(MySqlException e)
+		{
+			mensaje = e.Message;
+		}
+		finally
+		{
+			string? contrasenia = "";
+			try
+			{
+				MySqlCommand command2 = new MySqlCommand($"select contrasenia from obtener_indice_academico.user where usuario = '{nombre}'", connection.miConexion);
+				MySqlDataReader reader = command2.ExecuteReader();
+				while (reader.Read())
+				{
+					contrasenia = reader.GetString(0);
+				}
+				reader.Close();
+			}catch(MySqlException e)
+			{
+				mensaje = e.Message;
+			}
+			navigation.NavigateTo($"/calcular/indice?usuario={nombre}&contrasenia={contrasenia}");
+			connection.miConexion.Close();
+		}
+	}
+}

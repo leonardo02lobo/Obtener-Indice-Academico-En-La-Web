@@ -1,0 +1,64 @@
+﻿@page "/calcular"
+@using MySql.Data.MySqlClient
+@using SistemaDeListadoMateriasBD.Controller
+@inject NavigationManager navigation
+@rendermode InteractiveServer
+
+<PageTitle>Calcular Indice</PageTitle>
+
+<h1>Login @ingreso</h1>
+
+<form>
+	<div data-mdb-input-init class="form-outline mb-2">
+		<label class="form-label" for="form2Example1">Ingrese su usuario</label>
+		<input type="text" id="form2Example1" class="form-control" @bind="usuario" />
+
+	</div>
+
+	<div data-mdb-input-init class="form-outline mb-4">
+		<label class="form-label" for="form2Example2">Ingrese su contraseña</label>
+		<input type="text" id="form2Example2" class="form-control" @bind="contrasenia" />
+
+	</div>
+</form>
+<div class="col">
+	<button data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block mb-4" @onclick="Login">Ingresar</button>
+</div>
+<div class="text-center">
+	<p>Nuevo Usuario? <a href="calcular/registro">Registrate</a></p>
+</div>
+
+
+@code {
+	private string usuario = "";
+	private string contrasenia = "";
+	private Conexion connection = new Conexion();
+	private string ingreso = "";
+
+	private void Login()
+	{
+		try
+		{
+			string consulta = $"SELECT exists ( select 1 FROM obtener_indice_academico.user where usuario = '{usuario}' and contrasenia = '{contrasenia}') as existe; ";
+			MySqlCommand comando = new MySqlCommand(consulta, connection.miConexion);
+			connection.miConexion.Open();
+			MySqlDataReader reader = comando.ExecuteReader();
+
+			while (reader.Read())
+			{
+				if (reader.GetInt32(0) == 1)
+				{
+					navigation.NavigateTo($"/calcular/indice?usuario={usuario}&contrasenia={contrasenia}");
+				}
+			}
+		}
+		catch (MySqlException e)
+		{
+			ingreso = e.Message;
+		}
+		finally
+		{
+			connection.miConexion.Close();
+		}
+	}
+}

@@ -1,0 +1,41 @@
+{
+  "Files": [
+    {
+      "Id": "C:\\Users\\equipo\\source\\repos\\SistemaDeListadoMateriasBD\\SistemaDeListadoMateriasBD\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\SistemaDeListadoMateriasBD.bundle.scp.css",
+      "PackagePath": "staticwebassets\\SistemaDeListadoMateriasBD.bundle.scp.css"
+    },
+    {
+      "Id": "C:\\Users\\equipo\\source\\repos\\SistemaDeListadoMateriasBD\\SistemaDeListadoMateriasBD\\wwwroot\\app.css",
+      "PackagePath": "staticwebassets\\app.css"
+    },
+    {
+      "Id": "C:\\Users\\equipo\\source\\repos\\SistemaDeListadoMateriasBD\\SistemaDeListadoMateriasBD\\wwwroot\\bootstrap\\bootstrap.min.css",
+      "PackagePath": "staticwebassets\\bootstrap\\bootstrap.min.css"
+    },
+    {
+      "Id": "C:\\Users\\equipo\\source\\repos\\SistemaDeListadoMateriasBD\\SistemaDeListadoMateriasBD\\wwwroot\\bootstrap\\bootstrap.min.css.map",
+      "PackagePath": "staticwebassets\\bootstrap\\bootstrap.min.css.map"
+    },
+    {
+      "Id": "C:\\Users\\equipo\\source\\repos\\SistemaDeListadoMateriasBD\\SistemaDeListadoMateriasBD\\wwwroot\\favicon.png",
+      "PackagePath": "staticwebassets\\favicon.png"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.SistemaDeListadoMateriasBD.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.build.SistemaDeListadoMateriasBD.props",
+      "PackagePath": "build\\SistemaDeListadoMateriasBD.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildMultiTargeting.SistemaDeListadoMateriasBD.props",
+      "PackagePath": "buildMultiTargeting\\SistemaDeListadoMateriasBD.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildTransitive.SistemaDeListadoMateriasBD.props",
+      "PackagePath": "buildTransitive\\SistemaDeListadoMateriasBD.props"
+    }
+  ],
+  "ElementsToRemove": []
+}
